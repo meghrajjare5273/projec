@@ -72,6 +72,7 @@ export default function ProfileForm() {
     // await updateProfile(data)
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -139,6 +140,7 @@ export default function ProfileForm() {
               <FormField
                 control={form.control}
                 name="profilePicture"
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 render={({ field: { value, ...field } }) => (
                   <FormItem>
                     <FormLabel>Profile Picture</FormLabel>
@@ -146,7 +148,7 @@ export default function ProfileForm() {
                       <Input
                         type="file"
                         accept="image/*"
-                        onChange={handleFileChange}
+                       // onChange={handleFileChange}
                         {...field}
                       />
                     </FormControl>
