@@ -1,0 +1,34 @@
+"use client"
+import { authClient } from "@/lib/authClient";
+//import Link from "next/link";
+//import { useRouter } from "next/navigation";
+//import { useState } from "react";
+
+async function userSession() {
+    return await authClient.useSession()
+}
+
+export default async function Page() {
+  //const router = useRouter()
+  //const [isuser, setIsuser] = useState(false)
+  /*f(data){
+    setIsuser(true)
+  }*/
+  const session = await userSession()
+  console.log(session)
+//   if(!isuser){
+//    // router.push("sign-in")
+//   }
+//   if(data){
+    return(
+      <h1>Hell0{session?.data?.user.name}</h1>
+    )
+//   }else{
+//     return(
+//       <>
+//       <h1>Login Here</h1>
+//       <Link href={"sign-in"}>SignIn</Link>
+//       </>
+    //)
+  }
+//}
