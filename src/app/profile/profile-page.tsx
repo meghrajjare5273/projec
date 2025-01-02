@@ -21,6 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
+import updateUser from "../../lib/updatedUser";
 
 
 const profileSchema = z.object({
@@ -28,18 +29,17 @@ const profileSchema = z.object({
   name: z.string().min(2).max(50),
   email: z.string().email(),
   bio: z.string().max(160).optional(),
-  location: z.string().max(50).optional(),
-  website: z.string().url().optional().or(z.literal("")),
   profilePicture: z.instanceof(File).optional(),
 });
 
-type ProfileFormValues = z.infer<typeof profileSchema>;
+export type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function ProfileForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const session = authClient.useSession();
   const router = useRouter()
+  const sessionId = session.data?.user.id
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -47,9 +47,7 @@ export default function ProfileForm() {
       username: "",
       name: "",
       email: "",
-      bio: "",
-      location: "",
-      website: "",
+      bio: ""
     },
   });
 
@@ -69,7 +67,9 @@ export default function ProfileForm() {
   async function onSubmit(data: ProfileFormValues) {
     console.log(data);
     // Here you would typically send this data to your backend
-    // await updateProfile(data)
+    await updateUser(sessionId, data)
+
+    
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -123,7 +123,7 @@ export default function ProfileForm() {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>Complete Your Profile</CardTitle>
+        <CardTitle>Complete Your Profile {typeof(session)}</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -219,32 +219,6 @@ export default function ProfileForm() {
                     You can @mention other users and organizations to link to
                     them.
                   </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Location</FormLabel>
-                  <FormControl>
-                    <Input placeholder="San Francisco, CA" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="website"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Website</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://example.com" {...field} />
-                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

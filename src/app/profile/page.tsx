@@ -1,3 +1,4 @@
+"use client"
 import ProfileForm from './profile-page'
 
 export default function ProfilePage() {
