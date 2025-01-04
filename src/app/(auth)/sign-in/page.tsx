@@ -133,7 +133,8 @@ export default function SignInPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isPending}>
+              <Button type="submit" className="w-full bg-black text-white hover:bg-white hover:text-black" disabled={isPending}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M0 3v18h24v-18h-24zm6.623 7.929l-4.623 5.712v-9.458l4.623 3.746zm-4.141-5.929h19.035l-9.517 7.713-9.518-7.713zm5.694 7.188l3.824 3.099 3.83-3.104 5.612 6.817h-18.779l5.513-6.812zm9.208-1.264l4.616-3.741v9.348l-4.616-5.607z"/></svg>
                 {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -142,13 +143,15 @@ export default function SignInPage() {
                 ) : (
                   'Sign In'
                 )}
+
+
               </Button>
             </form>
           </Form>
           <div className="mt-4 space-y-2">
             <Button
               variant="outline"
-              className="w-full"
+              className="w-full bg-black text-white mt-5"
               onClick={async () => {
                 // Implement Google sign-in logic
                 await authClient.signIn.social({
@@ -170,7 +173,7 @@ export default function SignInPage() {
             </Button>
             <Button
               variant="outline"
-              className="w-full"
+              className="w-full bg-black text-white"
               onClick={async () => {
                 // Implement GitHub sign-in logic
                 await authClient.signIn.social({

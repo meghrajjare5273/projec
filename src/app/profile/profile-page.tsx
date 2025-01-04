@@ -55,9 +55,10 @@ export default function ProfileForm() {
     if (session?.data?.user) {
       form.reset({
         name: session.data.user.name || "",
-        email: session.data.user.email || "",
+        email: session.data.user.email || ""
       });
       setIsLoading(false);
+       setAvatarUrl(session.data.user.image);
     }
     else{
       setIsLoading(false)
