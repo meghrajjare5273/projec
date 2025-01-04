@@ -58,7 +58,7 @@ export default function ProfileForm() {
         email: session.data.user.email || ""
       });
       setIsLoading(false);
-       setAvatarUrl(session.data.user.image);
+       setAvatarUrl(session.data.user.image || "");
     }
     else{
       setIsLoading(false)
