@@ -22,6 +22,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import Link from "next/link";
+import { Github, Loader2 } from 'lucide-react';
 import { authClient } from "@/lib/authClient";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -75,7 +76,6 @@ export default function SignInPage() {
             console.log(ctx);
             form.resetField("password");
             setError(ctx.error.message);
-
           },
         }
       );
@@ -87,22 +87,22 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="bg-gray-100">
+    <div className="flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
           <CardDescription>
-            Welcome! Login To Continue Where You Left Off.
+            Welcome! Login to continue where you left off.
           </CardDescription>
         </CardHeader>
         <CardContent>
           {error && (
-            <div className="mb-4 p-4 text-sm text-red-800 bg-red-100 rounded-lg">
+            <div className="mb-4 rounded-lg bg-red-100 p-4 text-sm text-red-800">
               {error}
             </div>
           )}
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="email"
@@ -134,53 +134,70 @@ export default function SignInPage() {
                 )}
               />
               <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending ? "Signing Up" : "Sign Up"}
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing In
+                  </>
+                ) : (
+                  'Sign In'
+                )}
               </Button>
             </form>
           </Form>
+          <div className="mt-4 space-y-2">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={async () => {
+                // Implement Google sign-in logic
+                await authClient.signIn.social({
+                  provider:"google",
+                })
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="mr-2 h-4 w-4"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="currentColor"
+                  d="M11.99 13.9v-3.72h9.36c.14.63.25 1.22.25 2.05c0 5.71-3.83 9.77-9.6 9.77c-5.52 0-10-4.48-10-10S6.48 2 12 2c2.7 0 4.96.99 6.69 2.61l-2.84 2.76c-.72-.68-1.98-1.48-3.85-1.48c-3.31 0-6.01 2.75-6.01 6.12s2.7 6.12 6.01 6.12c3.83 0 5.24-2.65 5.5-4.22h-5.51z"
+                />
+              </svg>
+              Sign in with Google
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={async () => {
+                // Implement GitHub sign-in logic
+                await authClient.signIn.social({
+                  provider:"github",
+                })
+              }}
+            >
+              <Github className="mr-2 h-4 w-4" />
+              Sign in with GitHub
+            </Button>
+          </div>
         </CardContent>
-        <CardFooter className="flex justify-center">
+        <CardFooter className="flex flex-col items-center text-center">
           <p className="text-sm text-gray-500">
             By signing in, you agree to our Terms of Service and Privacy Policy.
-            <br></br>
-            <br />
-            Don&apos;t Have an Account.?{" "}
+          </p>
+          <p className="mt-2 text-sm text-gray-500">
+            Don&apos;t have an account?{' '}
             <Link
-              className="hover:cursor-pointer hover:text-black"
-              href={"/sign-up"}
+              className="font-medium text-primary hover:underline"
+              href="/sign-up"
             >
               Sign Up
             </Link>
           </p>
         </CardFooter>
       </Card>
-
-      <p className="text-md text-gray-500">--------------------OR------------------</p>
-      <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full gap-2"
-                  )}
-                  onClick={async () => {
-                    await authClient.signIn.social({
-                      provider: "github",
-                      //callbackURL: "/dashboard"
-                    });
-                  }}
-                >
-                  <svg
-				xmlns="http://www.w3.org/2000/svg"
-				width="1em"
-				height="1em"
-				viewBox="0 0 24 24"
-			>
-				<path
-					fill="currentColor"
-					d="M11.99 13.9v-3.72h9.36c.14.63.25 1.22.25 2.05c0 5.71-3.83 9.77-9.6 9.77c-5.52 0-10-4.48-10-10S6.48 2 12 2c2.7 0 4.96.99 6.69 2.61l-2.84 2.76c-.72-.68-1.98-1.48-3.85-1.48c-3.31 0-6.01 2.75-6.01 6.12s2.7 6.12 6.01 6.12c3.83 0 5.24-2.65 5.5-4.22h-5.51z"
-				></path>
-			</svg>
-                  Sign in with Google
-                </Button>
     </div>
-  );
+  )
 }
