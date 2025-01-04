@@ -25,7 +25,7 @@ import Link from "next/link";
 import { Github, Loader2 } from 'lucide-react';
 import { authClient } from "@/lib/authClient";
 import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
+///import { cn } from "@/lib/utils";
 
 const signUpSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
