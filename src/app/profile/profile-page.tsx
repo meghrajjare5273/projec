@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { authClient } from "@/lib/authClient";
+//import { authClient } from "@/lib/authClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +22,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import updateUser from "../../lib/updatedUser";
+//import {user} from "@/lib/getSession";
+import { currentUser } from "../../lib/getSession";
+import { userSession } from "@/lib/types";
+//import prisma from "@/lib/prisma";
 
 
 const profileSchema = z.object({
@@ -37,9 +41,11 @@ export type ProfileFormValues = z.infer<typeof profileSchema>;
 export default function ProfileForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const session = authClient.useSession();
+  const [userId, setUserId] = useState<string | undefined>(undefined)
+  const [user, setUser] = useState<userSession | undefined>(undefined)
+  //const user = currentUser     //await userSession()  //authClient.useSession();
   const router = useRouter()
-  const sessionId = session.data?.user.id
+  //const sessionId = user.id
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -52,23 +58,31 @@ export default function ProfileForm() {
   });
 
   useEffect(() => {
-    if (session?.data?.user) {
-      form.reset({
-        name: session.data.user.name || "",
-        email: session.data.user.email || ""
-      });
-      setIsLoading(false);
-       setAvatarUrl(session.data.user.image || "");
-    }
-    else{
-      setIsLoading(false)
-    }
-  }, [session, form]);
+    async function fetchUser() {
+      const user = await currentUser()
+      
+      
+      if (user) {
+        setUserId(user.id)
+        setUser(user)
+        form.reset({
+          name: user.name || "",
+          email: user.email || ""
+        });
+        setIsLoading(false);
+        setAvatarUrl(user.image || "");
+      }
+      else{
+        setIsLoading(false)
+      }
+    } 
+    fetchUser();
+  }, [userId, form]);
 
   async function onSubmit(data: ProfileFormValues) {
     console.log(data);
     // Here you would typically send this data to your backend
-    await updateUser(sessionId, data)
+    await updateUser(userId, data)
 
     
   }
@@ -105,7 +119,7 @@ export default function ProfileForm() {
     );
   }
 
-  else if (!session?.data?.user){
+  else if (!user){
     return (
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader>
@@ -124,7 +138,7 @@ export default function ProfileForm() {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>Complete Your Profile {typeof(session)}</CardTitle>
+        <CardTitle>Complete Your Profile {typeof(user)}</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>

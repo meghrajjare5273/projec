@@ -1,14 +1,10 @@
 export type userSession = {
-    data:{
-        user:{
             id: string
-            username : string 
-            email: string 
+            username : string | null
+            email: string
+            emailVerified : boolean 
             createdAt : Date
             updatedAt : Date
             name : string | null
             image : string | null
-        }
-    
-    }
 }
