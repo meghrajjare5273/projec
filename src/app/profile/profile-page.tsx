@@ -67,7 +67,8 @@ export default function ProfileForm() {
         setUser(user)
         form.reset({
           name: user.name || "",
-          email: user.email || ""
+          email: user.email || "",
+          username: user.username || ""
         });
         setIsLoading(false);
         setAvatarUrl(user.image || "");
