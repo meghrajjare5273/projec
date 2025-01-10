@@ -25,6 +25,13 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { currentUser } from "@/lib/getSession"
+//import { redirect } from "next/navigation"
+import { userSessionSidebar } from "@/lib/types"
+//import { sendStatusCode } from "next/dist/server/api-utils"
+
+
+
 
 // This is sample data.
 const data = {
@@ -156,7 +163,17 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>): React.JSX.Element {
+  const [navUser, setNavUser] = React.useState<userSessionSidebar | null>(null)
+  React.useEffect(()=>{
+    async function fetchUser(){
+      const NavUser = await currentUser();
+      if(NavUser){
+        setNavUser(NavUser)
+      }
+    }
+    fetchUser()
+  },[])
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -167,7 +184,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={navUser} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
