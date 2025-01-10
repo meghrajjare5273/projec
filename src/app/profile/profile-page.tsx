@@ -60,8 +60,6 @@ export default function ProfileForm() {
   useEffect(() => {
     async function fetchUser() {
       const user = await currentUser()
-      
-      
       if (user) {
         setUserId(user.id)
         setUser(user)
