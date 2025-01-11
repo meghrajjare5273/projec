@@ -100,9 +100,9 @@ export function NavUser({ user }: { user: userSessionSidebar | null}) {
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <LogOut
-                onClick={() => {
-                  authClient.signOut();
-                  router.refresh()
+                onClick={async () => {
+                  await authClient.signOut();
+                  router.push("/")
                 }}
               />
               Log out

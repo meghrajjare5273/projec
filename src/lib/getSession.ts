@@ -21,7 +21,8 @@ export const currentUser = async () =>{
     const user = await prisma.user.findFirst({
         where:{
           id: userData.id as string
-        }
+        },
+        cacheStrategy: {swr:60, ttl:30}
       })
     return user  
 } 
