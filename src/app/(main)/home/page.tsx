@@ -12,7 +12,7 @@ export default function Homepage() {
     async function fetchUser() {
       const user = await currentUser();
       if (user) {
-        setUser(user);
+        setUser(user as userSession);
         setIsLoading(false);
       }
     }

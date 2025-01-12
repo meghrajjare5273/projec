@@ -35,6 +35,6 @@ export const currentUser = async () => {
     await redis.set(userData.id, user);
     return user;
   } else {
-    return userRedis;
+    return userRedis as typeof userSession;
   }
 };
