@@ -169,7 +169,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>): 
     async function fetchUser(){
       const NavUser = await currentUser();
       if(NavUser){
-        setNavUser(NavUser)
+        setNavUser(NavUser as userSessionSidebar)
       }
     }
     fetchUser()
