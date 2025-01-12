@@ -61,22 +61,24 @@ export default function ProfileForm() {
     async function fetchUser() {
       const user = await currentUser()
       if (user) {
-        setUserId(user.id)
-        setUser(user)
-        form.reset({
-          name: user.name || "",
-          email: user.email || "",
-          username: user.username || ""
-        });
-        setIsLoading(false);
-        setAvatarUrl(user.image || "");
+        setUser(user as userSession)
       }
       else{
         setIsLoading(false)
       }
     } 
     fetchUser();
-  }, [userId, form]);
+    if(user){
+      form.reset({
+        name: user.name || "",
+        email: user.email || "",
+        username: user.username || ""
+      });
+      setIsLoading(false);
+      setUserId(user.id)
+      setAvatarUrl(user.image || "");
+    }
+  }, [user, form]);
 
   async function onSubmit(data: ProfileFormValues) {
     console.log(data);
