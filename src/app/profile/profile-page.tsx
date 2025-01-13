@@ -42,7 +42,8 @@ export default function ProfileForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | undefined>(undefined)
-  const [user, setUser] = useState<userSession | undefined>(undefined)
+  const [activeUser, setActiveUser] = useState<userSession | undefined>(undefined)
+  const [isUser, setIsUser] = useState(false)
   //const user = currentUser     //await userSession()  //authClient.useSession();
   const router = useRouter()
   //const sessionId = user.id
@@ -59,26 +60,30 @@ export default function ProfileForm() {
 
   useEffect(() => {
     async function fetchUser() {
-      const user = await currentUser()
-      if (user) {
-        setUser(user as userSession)
+      try {
+        const user = await currentUser();
+        if (user) {
+          setActiveUser(user as userSession);
+          setIsUser(true);
+          // Set form values and other state only after getting user data
+          form.reset({
+            name: user.name || "",
+            email: user.email || "",
+            username: user.username || ""
+          });
+          setUserId(user.id);
+          setAvatarUrl(user.image || "");
+          setIsLoading(false);
+        } else {
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        setIsLoading(false);
       }
-      else{
-        setIsLoading(false)
-      }
-    } 
-    fetchUser();
-    if(user){
-      form.reset({
-        name: user.name || "",
-        email: user.email || "",
-        username: user.username || ""
-      });
-      setIsLoading(false);
-      setUserId(user.id)
-      setAvatarUrl(user.image || "");
     }
-  }, [user, form]);
+    fetchUser();
+  }, []);
 
   async function onSubmit(data: ProfileFormValues) {
     console.log(data);
@@ -120,7 +125,7 @@ export default function ProfileForm() {
     );
   }
 
-  else if (!user){
+  else if (!activeUser){
     return (
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader>
@@ -139,7 +144,7 @@ export default function ProfileForm() {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>Complete Your Profile {typeof(user)}</CardTitle>
+        <CardTitle>Complete Your Profile</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -164,7 +169,7 @@ export default function ProfileForm() {
                       <Input
                         type="file"
                         accept="image/*"
-                       // onChange={handleFileChange}
+                       //onChange={handleFileChange}
                         {...field}
                       />
                     </FormControl>

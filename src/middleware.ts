@@ -23,5 +23,5 @@ export default async function authMiddleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/home"],
+  matcher: ["/home","/profile"],
 };
