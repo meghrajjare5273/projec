@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -27,7 +28,6 @@ import { currentUser } from "../../lib/getSession";
 import { userSession } from "@/lib/types";
 //import prisma from "@/lib/prisma";
 
-
 const profileSchema = z.object({
   username: z.string().min(3).max(20),
   name: z.string().min(2).max(50),
@@ -41,11 +41,13 @@ export type ProfileFormValues = z.infer<typeof profileSchema>;
 export default function ProfileForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | undefined>(undefined)
-  const [activeUser, setActiveUser] = useState<userSession | undefined>(undefined)
-  const [isUser, setIsUser] = useState(false)
+  const [userId, setUserId] = useState<string | undefined>(undefined);
+  const [activeUser, setActiveUser] = useState<userSession | undefined>(
+    undefined
+  );
+  const [isUser, setIsUser] = useState(false);
   //const user = currentUser     //await userSession()  //authClient.useSession();
-  const router = useRouter()
+  const router = useRouter();
   //const sessionId = user.id
 
   const form = useForm<ProfileFormValues>({
@@ -54,7 +56,7 @@ export default function ProfileForm() {
       username: "",
       name: "",
       email: "",
-      bio: ""
+      bio: "",
     },
   });
 
@@ -66,19 +68,21 @@ export default function ProfileForm() {
           setActiveUser(user as userSession);
           setIsUser(true);
           // Set form values and other state only after getting user data
-          form.reset({
-            name: user.name || "",
-            email: user.email || "",
-            username: user.username || ""
-          });
-          setUserId(user.id);
-          setAvatarUrl(user.image || "");
-          setIsLoading(false);
+          if (activeUser) {
+            form.reset({
+              name: activeUser.name || "",
+              email: activeUser.email || "",
+              username: activeUser.username || "",
+            });
+            setUserId(activeUser.id);
+            setAvatarUrl(activeUser.image || "");
+            setIsLoading(false);
+          }
         } else {
           setIsLoading(false);
         }
       } catch (error) {
-        console.error('Error fetching user:', error);
+        console.error("Error fetching user:", error);
         setIsLoading(false);
       }
     }
@@ -88,9 +92,7 @@ export default function ProfileForm() {
   async function onSubmit(data: ProfileFormValues) {
     console.log(data);
     // Here you would typically send this data to your backend
-    await updateUser(userId, data)
-
-    
+    await updateUser(userId, data);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -123,22 +125,25 @@ export default function ProfileForm() {
         </CardContent>
       </Card>
     );
-  }
-
-  else if (!activeUser){
+  } else if (!isUser) {
     return (
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle>Sorry You Cannot Access The Contents on This Page</CardTitle>
+          <CardTitle>
+            Sorry You Cannot Access The Contents on This Page
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <Button onClick={()=>{
-            router.push("/sign-in")
-          }}>Login Here</Button>
+          <Button
+            onClick={() => {
+              router.push("/sign-in");
+            }}
+          >
+            Login Here
+          </Button>
         </CardContent>
-
       </Card>
-    )
+    );
   }
 
   return (
@@ -169,7 +174,7 @@ export default function ProfileForm() {
                       <Input
                         type="file"
                         accept="image/*"
-                       //onChange={handleFileChange}
+                        //onChange={handleFileChange}
                         {...field}
                       />
                     </FormControl>
