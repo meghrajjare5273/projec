@@ -33,7 +33,7 @@ const profileSchema = z.object({
   name: z.string().min(2).max(50),
   email: z.string().email(),
   bio: z.string().max(160).optional(),
-  profilePicture: z.instanceof(File).optional(),
+  profilePicture: z.any().optional(),
 });
 
 export type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -42,9 +42,11 @@ export default function ProfileForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | undefined>(undefined);
-  const [activeUser, setActiveUser] = useState<userSession | undefined>(
-    undefined
-  );
+  //const [activeUser, setActiveUser] = useState<userSession | undefined>(
+  //undefined
+  //);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [file, setFile] = useState<File | undefined>(undefined);
   const [isUser, setIsUser] = useState(false);
   //const user = currentUser     //await userSession()  //authClient.useSession();
   const router = useRouter();
@@ -57,27 +59,26 @@ export default function ProfileForm() {
       name: "",
       email: "",
       bio: "",
+      profilePicture: null,
     },
   });
 
   useEffect(() => {
     async function fetchUser() {
       try {
-        const user = await currentUser();
+        const user = (await currentUser()) as userSession;
         if (user) {
-          setActiveUser(user as userSession);
+          //setActiveUser(user as userSession);
           setIsUser(true);
           // Set form values and other state only after getting user data
-          if (activeUser) {
-            form.reset({
-              name: activeUser.name || "",
-              email: activeUser.email || "",
-              username: activeUser.username || "",
-            });
-            setUserId(activeUser.id);
-            setAvatarUrl(activeUser.image || "");
-            setIsLoading(false);
-          }
+          form.reset({
+            name: user.name || "",
+            email: user.email || "",
+            username: user.username || "",
+          });
+          setUserId(user.id);
+          setAvatarUrl(user.image || "");
+          setIsLoading(false);
         } else {
           setIsLoading(false);
         }
@@ -87,24 +88,53 @@ export default function ProfileForm() {
       }
     }
     fetchUser();
+    //     if (activeUser) {
+    //             form.reset({
+    //               name: activeUser.name || "",
+    //               email: activeUser.email || "",
+    //               username: activeUser.username || "",
+    //             });
+    //             setUserId(activeUser.id);
+    //             setAvatarUrl(activeUser.image || "");
+    //             setIsLoading(false);
+    //           }
   }, []);
 
   async function onSubmit(data: ProfileFormValues) {
     console.log(data);
-    // Here you would typically send this data to your backend
-    await updateUser(userId, data);
+    const formData = new FormData();
+    formData.append("username", data.username);
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    if (data.bio) formData.append("bio", data.bio);
+    if (file) formData.append("profilePicture", file);
+
+    try {
+      if (file) {
+        const blob = await fetch("/api/blob/", {
+          method: "POST",
+          body: file,
+        });
+        console.log(blob);
+      }
+      await updateUser(userId, data);
+      // Handle successful update (e.g., show a success message)
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      // Handle error (e.g., show an error message)
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatarUrl(reader.result as string);
       };
       reader.readAsDataURL(file);
-      form.setValue("profilePicture", file);
     }
   };
 
@@ -174,8 +204,8 @@ export default function ProfileForm() {
                       <Input
                         type="file"
                         accept="image/*"
-                        //onChange={handleFileChange}
-                        {...field}
+                        onChange={handleFileChange}
+                        //{...field}
                       />
                     </FormControl>
                     <FormDescription>
