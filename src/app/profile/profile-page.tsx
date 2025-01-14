@@ -33,7 +33,7 @@ const profileSchema = z.object({
   profilePicture: z.any().optional(),
 });
 
-type ProfileFormValues = z.infer<typeof profileSchema>;
+export type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function ProfileForm() {
   const [isLoading, setIsLoading] = useState(true);
