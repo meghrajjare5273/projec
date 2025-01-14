@@ -22,7 +22,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
-import updateUser from "../../lib/updatedUser";
+import { updateUser, updateUserImage } from "../../lib/updatedUser";
 //import {user} from "@/lib/getSession";
 import { currentUser } from "../../lib/getSession";
 import { userSession } from "@/lib/types";
@@ -46,7 +46,7 @@ export default function ProfileForm() {
   //const [activeUser, setActiveUser] = useState<userSession | undefined>(
   //undefined
   //);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isUpdating, setIsUpdating] = useState(false);
   const [file, setFile] = useState<File | undefined>(undefined);
   const [isUser, setIsUser] = useState(false);
   //const user = currentUser     //await userSession()  //authClient.useSession();
@@ -111,6 +111,7 @@ export default function ProfileForm() {
     if (file) formData.append("profilePicture", file);
 
     try {
+      setIsUpdating(true);
       if (file) {
         // const blob = await fetch("/api/blob/", {
         //   method: "POST",
@@ -118,8 +119,8 @@ export default function ProfileForm() {
         // });
         // console.log(blob);
 
-        const blob = await uploadImage(file)
-        console.log(blob)
+        const blob = await uploadImage(file);
+        await updateUserImage(userId, blob);
       }
       await updateUser(userId, data);
       // Handle successful update (e.g., show a success message)
@@ -283,7 +284,7 @@ export default function ProfileForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={isUpdating}>
               Update Profile
             </Button>
           </form>

@@ -2,9 +2,10 @@
 
 import { ProfileFormValues } from "@/app/profile/profile-page";
 import prisma from "./prisma";
+import { PutBlobResult } from "@vercel/blob";
 // import { userSession } from "./types"
 
-export default async function updateUser(
+export async function updateUser(
   sessionId: string | undefined,
   data: ProfileFormValues
 ) {
@@ -20,4 +21,19 @@ export default async function updateUser(
   });
 
   console.log(updatedUser);
+}
+
+export async function updateUserImage(
+  userId: string | undefined,
+  blob: PutBlobResult
+) {
+  const updatedImage = await prisma.user.update({
+    data: {
+      image: blob.url,
+    },
+    where: {
+      id: userId,
+    },
+  });
+  console.log(updatedImage);
 }

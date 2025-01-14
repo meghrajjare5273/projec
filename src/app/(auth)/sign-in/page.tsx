@@ -42,6 +42,8 @@ export default function SignInPage() {
   const [isPendingGoogle, setIsPendingGoogle] = useState(false);
   const [isPendingGithub, setIsPendingGithub] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+ 
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -61,6 +63,7 @@ export default function SignInPage() {
 
   async function onSubmit(values: z.infer<typeof signUpSchema>) {
     // Here you would typically send the data to your backend
+    setIsSubmitted(true)
     setIsPending(true);
     console.log(values);
     try {
@@ -88,6 +91,7 @@ export default function SignInPage() {
       console.error(error);
     } finally {
       setIsPending(false);
+      setIsSubmitted(false)
     }
   }
 
@@ -141,7 +145,7 @@ export default function SignInPage() {
               <Button
                 type="submit"
                 className="w-full bg-black text-white hover:bg-white hover:text-black"
-                disabled={isPending}
+                disabled={isPending || isSubmitted}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -169,7 +173,7 @@ export default function SignInPage() {
             <Button
               variant="outline"
               className="w-full bg-black text-white mt-5"
-              disabled={isPendingGoogle}
+              disabled={isPendingGoogle || isSubmitted}
               onClick={async () => {
                 // Implement Google sign-in logic
                 setIsPendingGoogle(true);
@@ -200,7 +204,7 @@ export default function SignInPage() {
             <Button
               variant="outline"
               className="w-full bg-black text-white"
-              disabled = {isPendingGithub}
+              disabled = {isPendingGithub || isSubmitted}
               onClick={async () => {
                 // Implement GitHub sign-in logic
                 setIsPendingGithub(true)
