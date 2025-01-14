@@ -26,6 +26,7 @@ import updateUser from "../../lib/updatedUser";
 //import {user} from "@/lib/getSession";
 import { currentUser } from "../../lib/getSession";
 import { userSession } from "@/lib/types";
+import uploadImage from "@/lib/imageUploads";
 //import prisma from "@/lib/prisma";
 
 const profileSchema = z.object({
@@ -111,11 +112,14 @@ export default function ProfileForm() {
 
     try {
       if (file) {
-        const blob = await fetch("/api/blob/", {
-          method: "POST",
-          body: file,
-        });
-        console.log(blob);
+        // const blob = await fetch("/api/blob/", {
+        //   method: "POST",
+        //   body: file,
+        // });
+        // console.log(blob);
+
+        const blob = await uploadImage(file)
+        console.log(blob)
       }
       await updateUser(userId, data);
       // Handle successful update (e.g., show a success message)
