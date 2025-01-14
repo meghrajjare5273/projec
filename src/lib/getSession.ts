@@ -4,7 +4,7 @@ import { Redis } from "@upstash/redis";
 import { headers } from "next/headers";
 import { auth } from "./auth";
 import { redirect } from "next/navigation";
-import prisma from "./prisma"
+import prisma from "./prisma";
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,
@@ -33,6 +33,7 @@ export const currentUser = async () => {
       cacheStrategy: { swr: 60, ttl: 30 },
     });
     await redis.set(userData.id, user);
+    redis.expire(userData.id, 60 * 30, "NX");
     return user;
   } else {
     return userRedis as typeof userSession;
