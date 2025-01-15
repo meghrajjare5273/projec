@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js" 
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -26,8 +26,10 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  posts         Posts[]
 
   @@unique([email, username])
+  @@index([id, username])
   @@map("user")
 }
 
@@ -74,4 +76,16 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model Posts {
+  id        String   @id @default(cuid())
+  authorId  String
+  content   String
+  image     String?
+  createdAt DateTime @default(now())
+  createdBy User     @relation(fields: [authorId], references: [id])
+
+  @@index([id])
+  @@map("posts")
 }
